@@ -66,7 +66,7 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 		err = s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
 			ChatId:               params.Message.Chat.ID,
 			Caption:              fmt.Sprintf(_helloCaption, params.Message.From.Username),
-			InlineKeyboardMarkup: telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
+			InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
 			ParseMode:            _htmlParseMode,
 			Photo:                fmt.Sprintf(_imagePath, "hello"),
 		})
