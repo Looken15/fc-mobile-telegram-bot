@@ -13,6 +13,8 @@ func Get() *Settings {
 		os.Exit(1)
 	}
 
+	fmt.Println(env)
+
 	var result Settings
 	filePath := "./.config/" + string(env) + ".json"
 	fileBytes, err := os.ReadFile(filePath)

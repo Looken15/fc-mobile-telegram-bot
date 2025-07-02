@@ -1,6 +1,6 @@
 package config
 
-const EnvVarName = "ENV"
+const EnvVarName = "APP_ENV"
 
 const (
 	EnvProd = Env("prod")

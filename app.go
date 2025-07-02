@@ -47,5 +47,5 @@ func (app *App) Stop(getContext func(parent context.Context, timeout time.Durati
 func (app *App) Init() {
 	telegramService := telegramservice.New()
 
-	app.server = api.NewServer(app.mainCtx, telegramService)
+	app.server = api.NewServer(app.mainCtx, app.settings, telegramService)
 }
