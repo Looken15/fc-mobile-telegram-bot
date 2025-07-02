@@ -38,6 +38,10 @@ var (
 )
 
 func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
+	if params.Message == nil {
+		return nil
+	}
+
 	if lo.Contains(_positionsArray, params.Message.Text) {
 		position := params.Message.Text
 
