@@ -7,5 +7,10 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /main .
 
 FROM alpine:latest
 WORKDIR /app
+
 COPY --from=builder /main .
+COPY .config ./.config/
+
+ENV APP_ENV=prod
+	
 CMD ["./main"]

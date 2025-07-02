@@ -3,20 +3,23 @@ package api
 import (
 	"context"
 	"fc-mobile-telegram-bot/api/handlers"
+	"fc-mobile-telegram-bot/config"
+	"fc-mobile-telegram-bot/service/telegramservice"
+	"fmt"
 	"github.com/gorilla/mux"
 	"net"
 	"net/http"
 )
 
-func NewServer(ctx context.Context) *http.Server {
+func NewServer(ctx context.Context, settings *config.Settings, service telegramservice.TelegramService) *http.Server {
 	router := mux.NewRouter()
 	router.Use(commonMiddleware)
 
 	router.HandleFunc("/ping", handlers.PingHandler()).Methods(http.MethodGet)
-	router.HandleFunc("/update", handlers.UpdateHandler()).Methods(http.MethodPost)
+	router.HandleFunc("/update", handlers.UpdateHandler(service)).Methods(http.MethodPost)
 
 	return &http.Server{
-		Addr:        ":8080",
+		Addr:        fmt.Sprintf(":%d", settings.Port),
 		BaseContext: func(listener net.Listener) context.Context { return ctx },
 		Handler:     router,
 	}

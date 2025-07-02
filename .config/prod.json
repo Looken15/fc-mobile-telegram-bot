@@ -1,0 +1,4 @@
+{
+  "port": 8080,
+  "api_base_url": "https://api.telegram.org/bot"
+}
