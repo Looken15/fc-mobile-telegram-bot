@@ -16,7 +16,7 @@ func NewServer(ctx context.Context, settings *config.Settings, service telegrams
 	router.Use(commonMiddleware)
 
 	router.HandleFunc("/ping", handlers.PingHandler()).Methods(http.MethodGet)
-	router.HandleFunc("/update", handlers.UpdateHandler()).Methods(http.MethodPost)
+	router.HandleFunc("/update", handlers.UpdateHandler(service)).Methods(http.MethodPost)
 
 	return &http.Server{
 		Addr:        fmt.Sprintf(":%d", settings.Port),

@@ -28,6 +28,8 @@ func Get() *Settings {
 		os.Exit(1)
 	}
 
+	result.Token = os.Getenv("TOKEN")
+
 	return &result
 }
 

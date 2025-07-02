@@ -4,6 +4,7 @@ import (
 	"context"
 	"fc-mobile-telegram-bot/api"
 	"fc-mobile-telegram-bot/config"
+	"fc-mobile-telegram-bot/methods/telegramapi"
 	"fc-mobile-telegram-bot/service/telegramservice"
 	"fmt"
 	"net/http"
@@ -45,7 +46,11 @@ func (app *App) Stop(getContext func(parent context.Context, timeout time.Durati
 }
 
 func (app *App) Init() {
-	telegramService := telegramservice.New()
+	url := fmt.Sprintf("%s%s", app.settings.ApiBaseUrl, app.settings.Token)
+
+	telegramApi := telegramapi.New(url)
+
+	telegramService := telegramservice.New(telegramApi)
 
 	app.server = api.NewServer(app.mainCtx, app.settings, telegramService)
 }
