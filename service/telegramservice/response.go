@@ -42,7 +42,7 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 		position := params.Message.Text
 
 		err = s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
-			ChatId:    params.Message.Chat.ID,
+			ChatId:    params.CallbackQuery.ChatInstanceId,
 			Caption:   fmt.Sprintf(_sendPhotoCaption, _positionsWordMap[position], _lastUpdateDate),
 			ParseMode: _htmlParseMode,
 			Photo:     fmt.Sprintf(_imagePath, position),
