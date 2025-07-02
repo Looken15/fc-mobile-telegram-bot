@@ -12,6 +12,5 @@ COPY --from=builder /main .
 COPY .config ./.config/
 
 ENV APP_ENV=prod
-ENV TOKEN=${TOKEN}
 	
 CMD ["./main"]
