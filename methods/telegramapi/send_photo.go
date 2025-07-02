@@ -29,7 +29,7 @@ func (c *TelegramApi) SendPhoto(request SendPhotoRequest) error {
 		keyboardString = ""
 	}
 
-	_, err := client.R().
+	_, err = client.R().
 		SetHeader("Content-Type", "multipart/form-data").
 		SetMultipartFormData(map[string]string{
 			"chat_id":      strconv.FormatInt(request.ChatId, 10),
