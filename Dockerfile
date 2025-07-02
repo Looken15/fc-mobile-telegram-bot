@@ -10,6 +10,7 @@ WORKDIR /app
 
 COPY --from=builder /main .
 COPY .config ./.config/
+COPY images ./images/
 
 ENV APP_ENV=prod
 	
