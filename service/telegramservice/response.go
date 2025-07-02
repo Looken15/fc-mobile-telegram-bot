@@ -38,11 +38,7 @@ var (
 )
 
 func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
-	if params.Message == nil {
-		return nil
-	}
-
-	if lo.Contains(_positionsArray, params.Message.Text) {
+	if params.CallbackQuery != nil && params.CallbackQuery.Message != nil && lo.Contains(_positionsArray, params.CallbackQuery.Message.Text) {
 		position := params.Message.Text
 
 		err = s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
@@ -58,7 +54,7 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 		return nil
 	}
 
-	if params.Message.Text == _startMessage {
+	if params.Message != nil && params.Message.Text == _startMessage {
 		keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
 		for _, pos := range _positionsArray {
 			keyboardArray := make([]telegramapi.InlineKeyboardButton, 0)
