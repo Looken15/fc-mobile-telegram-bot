@@ -39,7 +39,7 @@ var (
 
 func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 	if params.CallbackQuery != nil && lo.Contains(_positionsArray, params.CallbackQuery.Data) {
-		position := params.Message.Text
+		position := params.CallbackQuery.Data
 
 		err = s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
 			ChatId:    params.CallbackQuery.Message.Chat.ID,
