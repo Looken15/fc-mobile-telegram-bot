@@ -6,6 +6,7 @@ type SendMessageRequest struct {
 }
 
 type SendPhotoRequest struct {
-	ChatId int64  `json:"chat_id"`
-	Photo  string `json:"photo"`
+	ChatId  int64  `json:"chat_id"`
+	Photo   string `json:"photo"`
+	Caption string `json:"caption"`
 }
