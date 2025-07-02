@@ -3,12 +3,13 @@ package api
 import (
 	"context"
 	"fc-mobile-telegram-bot/api/handlers"
+	"fc-mobile-telegram-bot/service/telegramservice"
 	"github.com/gorilla/mux"
 	"net"
 	"net/http"
 )
 
-func NewServer(ctx context.Context) *http.Server {
+func NewServer(ctx context.Context, service telegramservice.TelegramService) *http.Server {
 	router := mux.NewRouter()
 	router.Use(commonMiddleware)
 
