@@ -1,9 +1,17 @@
 package models
 
 type TelegramUpdate struct {
-	EditedMessage *Message `json:"edited_message"`
-	Message       *Message `json:"message"`
-	UpdateID      float64  `json:"update_id"`
+	EditedMessage *Message       `json:"edited_message"`
+	Message       *Message       `json:"message"`
+	UpdateID      float64        `json:"update_id"`
+	CallbackQuery *CallbackQuery `json:"callback_query"`
+}
+
+type CallbackQuery struct {
+	Id      string   `json:"id"`
+	From    User     `json:"from"`
+	Message *Message `json:"message"`
+	Data    string   `json:"data"`
 }
 
 type Message struct {

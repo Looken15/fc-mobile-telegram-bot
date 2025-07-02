@@ -18,12 +18,14 @@ func (c *TelegramApi) SendMessage(request SendMessageRequest) error {
 		}
 	}(client)
 
-	_, err := client.R().
+	res, err := client.R().
 		SetBody(request).
 		Post(fmt.Sprintf("%s/%s", c.url, _sendMessageMethod))
 	if err != nil {
 		return err
 	}
+
+	fmt.Println(res.String())
 
 	return nil
 }
