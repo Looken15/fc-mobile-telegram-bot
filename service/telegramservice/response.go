@@ -9,8 +9,6 @@ import (
 )
 
 const (
-	_memberStatus = "member"
-
 	_startMessage = "/start"
 	_backMessage  = "/back"
 
@@ -25,6 +23,7 @@ const (
 )
 
 var (
+	_membersArray     = []string{"member", "creator", "administrator"}
 	_positionsArray   = []string{"ВРТ", "ЛЗ", "ЦЗ", "ПЗ", "ЦОП", "ЛП", "ЦП", "ПП", "ЦАП", "ЛВ", "НАП", "ПВ"}
 	_positionsWordMap = map[string]string{
 		"ВРТ": "Вратарей",
@@ -65,7 +64,7 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 		return
 	}
 
-	if result.Result.Status == "" {
+	if !lo.Contains(_membersArray, result.Result.Status) {
 		return
 	}
 
