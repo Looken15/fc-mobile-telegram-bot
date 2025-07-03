@@ -84,21 +84,35 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 	}
 
 	if callbackData.NextCommand == _backMessage || (params.Message != nil && params.Message.Text == _startMessage) {
+		var messageId int64
+		var chatId int64
+		var username string
+		if params.Message != nil {
+			messageId = params.Message.MessageID
+			chatId = params.Message.Chat.ID
+			username = params.Message.From.Username
+		}
+		if params.CallbackQuery != nil {
+			messageId = params.CallbackQuery.Message.MessageID
+			chatId = params.CallbackQuery.Message.Chat.ID
+			username = params.CallbackQuery.From.Username
+		}
+
 		keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
 		for _, pos := range _positionsArray {
 
 			keyboardArray := make([]telegramapi.InlineKeyboardButton, 0)
 			keyboardArray = append(keyboardArray, telegramapi.InlineKeyboardButton{Text: pos, CallbackData: utils.EncodeCallbackData(utils.CallbackData{
 				Position:  pos,
-				MessageId: params.Message.MessageID,
+				MessageId: messageId,
 			})})
 
 			keyboard = append(keyboard, keyboardArray)
 		}
 
 		_, err = s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
-			ChatId:               params.Message.Chat.ID,
-			Caption:              fmt.Sprintf(_helloCaption, params.Message.From.Username),
+			ChatId:               chatId,
+			Caption:              fmt.Sprintf(_helloCaption, username),
 			InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
 			ParseMode:            _htmlParseMode,
 			Photo:                fmt.Sprintf(_imagePath, "hello"),
