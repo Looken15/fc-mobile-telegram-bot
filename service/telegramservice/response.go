@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	_startMessage = "/start"
-	_backMessage  = "/back"
+	_startMessage    = "/start"
+	_backMessage     = "/back"
+	_tryAgainMessage = "/tryAgain"
 
 	_htmlParseMode = "html"
 	_imagePath     = "./images/%s.jpg"
@@ -65,6 +66,29 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 	}
 
 	if !lo.Contains(_membersArray, result.Result.Status) {
+		keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
+		keyboardLine := make([]telegramapi.InlineKeyboardButton, 0)
+
+		newCallbackData := utils.CallbackData{
+			NextCommand: _tryAgainMessage,
+			MessageId:   messageId,
+		}
+		keyboardLine = append(keyboardLine, telegramapi.InlineKeyboardButton{
+			Text:         "Проверить подписку",
+			CallbackData: utils.EncodeCallbackData(newCallbackData),
+		})
+		keyboard = append(keyboard, keyboardLine)
+
+		err = s.telegramApi.SendMessage(telegramapi.SendMessageRequest{
+			ChatId:               chatId,
+			Text:                 "Надо подписаться бро",
+			InlineKeyboardMarkup: telegramapi.InlineKeyboardMarkup{},
+			ParseMode:            _htmlParseMode,
+		})
+		if err != nil {
+			return err
+		}
+
 		return
 	}
 
@@ -135,7 +159,7 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 		return nil
 	}
 
-	if callbackData.NextCommand == _backMessage || (params.Message != nil && params.Message.Text == _startMessage) {
+	if callbackData.NextCommand == _tryAgainMessage || callbackData.NextCommand == _backMessage || (params.Message != nil && params.Message.Text == _startMessage) {
 		keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
 		for _, pos := range _positionsArray {
 
