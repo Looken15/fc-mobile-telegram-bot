@@ -1,6 +1,8 @@
 package telegramapi
 
-import "fc-mobile-telegram-bot/models"
+import (
+	"fc-mobile-telegram-bot/models"
+)
 
 type SendMessageRequest struct {
 	ChatId int64  `json:"chat_id"`
@@ -44,4 +46,32 @@ type KeyboardButton struct {
 type DeleteMessageRequest struct {
 	ChatId    int64 `json:"chat_id"`
 	MessageId int64 `json:"message_id"`
+}
+
+type GetChatMemberRequest struct {
+	ChatId int64 `json:"chat_id"`
+	UserId int64 `json:"user_id"`
+}
+
+type GetChatMemberResponse struct {
+	Ok     bool   `json:"ok"`
+	Result Result `json:"result"`
+}
+
+type Result struct {
+	User   User   `json:"user"`
+	Status string `json:"status"`
+}
+
+type User struct {
+	ID           int64  `json:"id"`
+	IsBot        bool   `json:"is_bot"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
+	Username     string `json:"username"`
+	LanguageCode string `json:"language_code"`
+}
+
+type AnswerCallbackQueryRequest struct {
+	CallbackQueryId string `json:"callback_query_id"`
 }
