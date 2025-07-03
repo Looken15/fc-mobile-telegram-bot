@@ -45,3 +45,19 @@ type DeleteMessageRequest struct {
 	ChatId    int64 `json:"chat_id"`
 	MessageId int64 `json:"message_id"`
 }
+
+type GetChatMemberRequest struct {
+	ChatId int64 `json:"chat_id"`
+	UserId int64 `json:"user_id"`
+}
+
+type GetChatMemberResponse struct {
+	Ok           bool   `json:"ok"`
+	UserID       int64  `json:"user_id"`
+	IsBot        bool   `json:"is_bot"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
+	Username     string `json:"username"`
+	LanguageCode string `json:"language_code"`
+	Status       string `json:"status"`
+}

@@ -9,6 +9,8 @@ import (
 )
 
 const (
+	_memberStatus = "member"
+
 	_startMessage = "/start"
 	_backMessage  = "/back"
 
@@ -17,9 +19,9 @@ const (
 
 	_lastUpdateDate = "2 февраля, 2025"
 
-	_sendPhotoCaption = "<b>ТОП-10 %s в FC Mobile</b>\n\nПоследнее обновление:\n%s"
+	_sendPhotoCaption = "<b>ТОП-10 %s в FC Mobile</b>\n\nПоследнее обновление:\n%s<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 25</a>"
 
-	_helloCaption = "<b>Приветствую, %s.</b>\n\nВ этом боте вы найдете ТОП-10 игроков на каждую позицию"
+	_helloCaption = "<b>Приветствую, %s.</b>\n\nВ этом боте вы найдете ТОП-10 игроков на каждую позицию\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 25</a>"
 )
 
 var (
@@ -41,6 +43,32 @@ var (
 )
 
 func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
+	var messageId, userId, chatId int64
+	var username string
+	if params.Message != nil {
+		userId = params.Message.From.ID
+		messageId = params.Message.MessageID
+		chatId = params.Message.Chat.ID
+		username = params.Message.From.Username
+	}
+	if params.CallbackQuery != nil {
+		userId = params.CallbackQuery.From.ID
+		messageId = params.CallbackQuery.Message.MessageID
+		chatId = params.CallbackQuery.Message.Chat.ID
+		username = params.CallbackQuery.From.Username
+	}
+
+	result, err := s.telegramApi.GetChatMember(telegramapi.GetChatMemberRequest{
+		UserId: userId,
+	})
+	if err != nil {
+		return
+	}
+
+	if result.Status != _memberStatus {
+		return
+	}
+
 	var callbackData utils.CallbackData
 	if params.CallbackQuery != nil {
 		callbackData, err = utils.DecodeCallbackData(params.CallbackQuery.Data)
@@ -57,7 +85,7 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 
 		newCallbackData := utils.CallbackData{
 			NextCommand: _backMessage,
-			MessageId:   params.CallbackQuery.Message.MessageID,
+			MessageId:   messageId,
 		}
 		keyboardLine = append(keyboardLine, telegramapi.InlineKeyboardButton{
 			Text:         "Назад",
@@ -66,11 +94,35 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 		keyboard = append(keyboard, keyboardLine)
 
 		_, err := s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
-			ChatId:               params.CallbackQuery.Message.Chat.ID,
+			ChatId:               chatId,
 			Caption:              fmt.Sprintf(_sendPhotoCaption, _positionsWordMap[position], _lastUpdateDate),
 			ParseMode:            _htmlParseMode,
 			Photo:                fmt.Sprintf(_imagePath, position),
 			InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
+		})
+		if err != nil {
+			return err
+		}
+
+		err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
+			ChatId:    chatId,
+			MessageId: callbackData.MessageId + 1,
+		})
+		if err != nil {
+			return err
+		}
+
+		err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
+			ChatId:    chatId,
+			MessageId: callbackData.MessageId + 1,
+		})
+		if err != nil {
+			return err
+		}
+
+		err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
+			ChatId:    chatId,
+			MessageId: callbackData.MessageId + 1,
 		})
 		if err != nil {
 			return err
@@ -85,20 +137,6 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 	}
 
 	if callbackData.NextCommand == _backMessage || (params.Message != nil && params.Message.Text == _startMessage) {
-		var messageId int64
-		var chatId int64
-		var username string
-		if params.Message != nil {
-			messageId = params.Message.MessageID
-			chatId = params.Message.Chat.ID
-			username = params.Message.From.Username
-		}
-		if params.CallbackQuery != nil {
-			messageId = params.CallbackQuery.Message.MessageID
-			chatId = params.CallbackQuery.Message.Chat.ID
-			username = params.CallbackQuery.From.Username
-		}
-
 		keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
 		for _, pos := range _positionsArray {
 
