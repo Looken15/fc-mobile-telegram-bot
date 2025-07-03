@@ -71,3 +71,7 @@ type User struct {
 	Username     string `json:"username"`
 	LanguageCode string `json:"language_code"`
 }
+
+type AnswerCallbackQueryRequest struct {
+	CallbackQueryId string `json:"callback_query_id"`
+}

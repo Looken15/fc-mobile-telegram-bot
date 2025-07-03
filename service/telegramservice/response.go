@@ -107,6 +107,12 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 		return
 	}
 
+	if params.CallbackQuery != nil {
+		_ = s.telegramApi.AnswerCallbackQuery(telegramapi.AnswerCallbackQueryRequest{
+			CallbackQueryId: params.CallbackQuery.Id,
+		})
+	}
+
 	if params.CallbackQuery != nil && lo.Contains(_positionsArray, callbackData.Position) {
 		position := callbackData.Position
 
