@@ -11,7 +11,7 @@ const (
 	_sendPhotoMethod = "sendPhoto"
 )
 
-func (c *TelegramApi) SendPhoto(request SendPhotoRequest) error {
+func (c *TelegramApi) SendPhoto(request SendPhotoRequest) (result SendMessageResponse, err error) {
 	client := resty.New()
 	defer func(client *resty.Client) {
 		err := client.Close()
@@ -22,7 +22,8 @@ func (c *TelegramApi) SendPhoto(request SendPhotoRequest) error {
 
 	keyboardJSON, err := json.Marshal(request.InlineKeyboardMarkup)
 	if err != nil {
-		return fmt.Errorf("error keyboard: %v", err)
+		err = fmt.Errorf("error keyboard: %v", err)
+		return
 	}
 	keyboardString := string(keyboardJSON)
 	if request.InlineKeyboardMarkup == nil {
@@ -38,10 +39,13 @@ func (c *TelegramApi) SendPhoto(request SendPhotoRequest) error {
 			"reply_markup": keyboardString,
 		}).
 		SetFile("photo", request.Photo).
+		SetResult(&result).
 		Post(fmt.Sprintf("%s/%s", c.url, _sendPhotoMethod))
 	if err != nil {
-		return err
+		return
 	}
 
-	return nil
+	//fmt.Println(res.String())
+
+	return
 }

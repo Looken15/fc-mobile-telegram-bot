@@ -50,7 +50,7 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 	if params.CallbackQuery != nil && lo.Contains(_positionsArray, callbackData.Position) {
 		position := callbackData.Position
 
-		err = s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
+		_, err := s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
 			ChatId:    params.CallbackQuery.Message.Chat.ID,
 			Caption:   fmt.Sprintf(_sendPhotoCaption, _positionsWordMap[position], _lastUpdateDate),
 			ParseMode: _htmlParseMode,
@@ -62,7 +62,7 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 
 		err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
 			ChatId:    params.CallbackQuery.Message.Chat.ID,
-			MessageId: callbackData.MessageId,
+			MessageId: callbackData.MessageId + 1,
 		})
 
 		return nil
@@ -85,7 +85,7 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 			keyboard = append(keyboard, keyboardArray)
 		}
 
-		err = s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
+		_, err = s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
 			ChatId:               params.Message.Chat.ID,
 			Caption:              fmt.Sprintf(_helloCaption, params.Message.From.Username),
 			InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
