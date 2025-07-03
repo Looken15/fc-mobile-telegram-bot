@@ -82,7 +82,7 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 		err = s.telegramApi.SendMessage(telegramapi.SendMessageRequest{
 			ChatId:               chatId,
 			Text:                 "Надо подписаться бро",
-			InlineKeyboardMarkup: telegramapi.InlineKeyboardMarkup{},
+			InlineKeyboardMarkup: telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
 			ParseMode:            _htmlParseMode,
 		})
 		if err != nil {
