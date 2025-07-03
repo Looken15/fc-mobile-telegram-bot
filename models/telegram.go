@@ -8,10 +8,11 @@ type TelegramUpdate struct {
 }
 
 type CallbackQuery struct {
-	Id      string   `json:"id"`
-	From    User     `json:"from"`
-	Message *Message `json:"message"`
-	Data    string   `json:"data"`
+	Id              string   `json:"id"`
+	From            User     `json:"from"`
+	Message         *Message `json:"message"`
+	Data            string   `json:"data"`
+	InlineMessageId string   `json:"inline_message_id"`
 }
 
 type Message struct {
