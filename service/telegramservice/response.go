@@ -18,7 +18,7 @@ const (
 
 	_lastUpdateDate = "2 февраля, 2025"
 
-	_sendPhotoCaption = "<b>ТОП-10 %s в FC Mobile</b>\n\nПоследнее обновление:\n%s<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 25</a>"
+	_sendPhotoCaption = "<b>ТОП-10 %s в FC Mobile</b>\n\nПоследнее обновление:\n%s\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 25</a>"
 
 	_helloCaption = "<b>Приветствую, %s.</b>\n\nВ этом боте вы найдете ТОП-10 игроков на каждую позицию\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 25</a>"
 )
