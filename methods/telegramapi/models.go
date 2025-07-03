@@ -1,11 +1,18 @@
 package telegramapi
 
+import "fc-mobile-telegram-bot/models"
+
 type SendMessageRequest struct {
 	ChatId int64  `json:"chat_id"`
 	Text   string `json:"text"`
 	//ReplyKeyboardMarkup  ReplyKeyboardMarkup  `json:"reply_markup"`
 	InlineKeyboardMarkup InlineKeyboardMarkup `json:"reply_markup"`
 	ParseMode            string               `json:"parse_mode"`
+}
+
+type SendMessageResponse struct {
+	Ok     bool           `json:"ok"`
+	Result models.Message `json:"result"`
 }
 
 type SendPhotoRequest struct {
@@ -32,4 +39,9 @@ type ReplyKeyboardMarkup struct {
 
 type KeyboardButton struct {
 	Text string `json:"text"`
+}
+
+type DeleteMessageRequest struct {
+	ChatId    int64 `json:"chat_id"`
+	MessageId int64 `json:"message_id"`
 }

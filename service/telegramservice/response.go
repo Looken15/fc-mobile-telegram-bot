@@ -3,12 +3,15 @@ package telegramservice
 import (
 	"fc-mobile-telegram-bot/methods/telegramapi"
 	"fc-mobile-telegram-bot/models"
+	"fc-mobile-telegram-bot/utils"
 	"fmt"
 	"github.com/samber/lo"
 )
 
 const (
-	_startMessage  = "/start"
+	_startMessage = "/start"
+	_backMessage  = "/back"
+
 	_htmlParseMode = "html"
 	_imagePath     = "./images/%s.jpg"
 
@@ -38,40 +41,92 @@ var (
 )
 
 func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
-	if params.CallbackQuery != nil && lo.Contains(_positionsArray, params.CallbackQuery.Data) {
-		position := params.CallbackQuery.Data
+	var callbackData utils.CallbackData
+	if params.CallbackQuery != nil {
+		callbackData, err = utils.DecodeCallbackData(params.CallbackQuery.Data)
+		if err != nil {
+			return err
+		}
+	}
 
-		err = s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
-			ChatId:    params.CallbackQuery.Message.Chat.ID,
-			Caption:   fmt.Sprintf(_sendPhotoCaption, _positionsWordMap[position], _lastUpdateDate),
-			ParseMode: _htmlParseMode,
-			Photo:     fmt.Sprintf(_imagePath, position),
+	if params.CallbackQuery != nil && lo.Contains(_positionsArray, callbackData.Position) {
+		position := callbackData.Position
+
+		keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
+		keyboardLine := make([]telegramapi.InlineKeyboardButton, 0)
+
+		newCallbackData := utils.CallbackData{
+			NextCommand: _backMessage,
+			MessageId:   params.CallbackQuery.Message.MessageID,
+		}
+		keyboardLine = append(keyboardLine, telegramapi.InlineKeyboardButton{
+			Text:         "Назад",
+			CallbackData: utils.EncodeCallbackData(newCallbackData),
+		})
+		keyboard = append(keyboard, keyboardLine)
+
+		_, err := s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
+			ChatId:               params.CallbackQuery.Message.Chat.ID,
+			Caption:              fmt.Sprintf(_sendPhotoCaption, _positionsWordMap[position], _lastUpdateDate),
+			ParseMode:            _htmlParseMode,
+			Photo:                fmt.Sprintf(_imagePath, position),
+			InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
 		})
 		if err != nil {
 			return err
 		}
 
+		err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
+			ChatId:    params.CallbackQuery.Message.Chat.ID,
+			MessageId: callbackData.MessageId + 1,
+		})
+
 		return nil
 	}
 
-	if params.Message != nil && params.Message.Text == _startMessage {
+	if callbackData.NextCommand == _backMessage || (params.Message != nil && params.Message.Text == _startMessage) {
+		var messageId int64
+		var chatId int64
+		var username string
+		if params.Message != nil {
+			messageId = params.Message.MessageID
+			chatId = params.Message.Chat.ID
+			username = params.Message.From.Username
+		}
+		if params.CallbackQuery != nil {
+			messageId = params.CallbackQuery.Message.MessageID
+			chatId = params.CallbackQuery.Message.Chat.ID
+			username = params.CallbackQuery.From.Username
+		}
+
 		keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
 		for _, pos := range _positionsArray {
+
 			keyboardArray := make([]telegramapi.InlineKeyboardButton, 0)
-			keyboardArray = append(keyboardArray, telegramapi.InlineKeyboardButton{Text: pos, CallbackData: pos})
+			keyboardArray = append(keyboardArray, telegramapi.InlineKeyboardButton{Text: pos, CallbackData: utils.EncodeCallbackData(utils.CallbackData{
+				Position:  pos,
+				MessageId: messageId,
+			})})
 
 			keyboard = append(keyboard, keyboardArray)
 		}
 
-		err = s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
-			ChatId:               params.Message.Chat.ID,
-			Caption:              fmt.Sprintf(_helloCaption, params.Message.From.Username),
+		_, err = s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
+			ChatId:               chatId,
+			Caption:              fmt.Sprintf(_helloCaption, username),
 			InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
 			ParseMode:            _htmlParseMode,
 			Photo:                fmt.Sprintf(_imagePath, "hello"),
 		})
 		if err != nil {
 			return err
+		}
+
+		if callbackData.MessageId != 0 {
+			err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
+				ChatId:    chatId,
+				MessageId: callbackData.MessageId + 1,
+			})
 		}
 
 		return nil
