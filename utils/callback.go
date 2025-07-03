@@ -3,17 +3,14 @@ package utils
 import "encoding/json"
 
 type CallbackData struct {
-	Position  string `json:"Position"`
-	MessageId int64  `json:"MessageId"`
+	Position    string `json:"Position"`
+	MessageId   int64  `json:"MessageId"`
+	NextCommand string `json:"NextCommand"`
 }
 
-func EncodeCallbackData(data CallbackData) (string, error) {
-	jsonData, err := json.Marshal(data)
-	if err != nil {
-		return "", err
-	}
-
-	return string(jsonData), nil
+func EncodeCallbackData(data CallbackData) string {
+	jsonData, _ := json.Marshal(data)
+	return string(jsonData)
 }
 
 func DecodeCallbackData(data string) (result CallbackData, err error) {

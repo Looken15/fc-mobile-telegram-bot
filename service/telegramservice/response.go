@@ -9,7 +9,9 @@ import (
 )
 
 const (
-	_startMessage  = "/start"
+	_startMessage = "/start"
+	_backMessage  = "/back"
+
 	_htmlParseMode = "html"
 	_imagePath     = "./images/%s.jpg"
 
@@ -50,11 +52,24 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 	if params.CallbackQuery != nil && lo.Contains(_positionsArray, callbackData.Position) {
 		position := callbackData.Position
 
+		keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
+		keyboardLine := make([]telegramapi.InlineKeyboardButton, 0)
+
+		newCallbackData := utils.CallbackData{
+			NextCommand: _backMessage,
+		}
+		keyboardLine = append(keyboardLine, telegramapi.InlineKeyboardButton{
+			Text:         "Назад",
+			CallbackData: utils.EncodeCallbackData(newCallbackData),
+		})
+		keyboard = append(keyboard, keyboardLine)
+
 		_, err := s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
-			ChatId:    params.CallbackQuery.Message.Chat.ID,
-			Caption:   fmt.Sprintf(_sendPhotoCaption, _positionsWordMap[position], _lastUpdateDate),
-			ParseMode: _htmlParseMode,
-			Photo:     fmt.Sprintf(_imagePath, position),
+			ChatId:               params.CallbackQuery.Message.Chat.ID,
+			Caption:              fmt.Sprintf(_sendPhotoCaption, _positionsWordMap[position], _lastUpdateDate),
+			ParseMode:            _htmlParseMode,
+			Photo:                fmt.Sprintf(_imagePath, position),
+			InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
 		})
 		if err != nil {
 			return err
@@ -68,19 +83,15 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 		return nil
 	}
 
-	if params.Message != nil && params.Message.Text == _startMessage {
+	if callbackData.NextCommand == _backMessage || (params.Message != nil && params.Message.Text == _startMessage) {
 		keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
 		for _, pos := range _positionsArray {
-			callbackData, err := utils.EncodeCallbackData(utils.CallbackData{
-				Position:  pos,
-				MessageId: params.Message.MessageID,
-			})
-			if err != nil {
-				return err
-			}
 
 			keyboardArray := make([]telegramapi.InlineKeyboardButton, 0)
-			keyboardArray = append(keyboardArray, telegramapi.InlineKeyboardButton{Text: pos, CallbackData: callbackData})
+			keyboardArray = append(keyboardArray, telegramapi.InlineKeyboardButton{Text: pos, CallbackData: utils.EncodeCallbackData(utils.CallbackData{
+				Position:  pos,
+				MessageId: params.Message.MessageID,
+			})})
 
 			keyboard = append(keyboard, keyboardArray)
 		}
