@@ -6,7 +6,6 @@ import (
 	"fc-mobile-telegram-bot/utils"
 	"fmt"
 	"github.com/samber/lo"
-	"strconv"
 )
 
 const (
@@ -44,7 +43,7 @@ var (
 )
 
 func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
-	var messageId, userId, chatId, inlineMessageId int64
+	var messageId, userId, chatId int64
 	var username string
 	if params.Message != nil {
 		userId = params.Message.From.ID
@@ -57,9 +56,6 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 		messageId = params.CallbackQuery.Message.MessageID
 		chatId = params.CallbackQuery.Message.Chat.ID
 		username = params.CallbackQuery.From.Username
-
-		inlineMessageId64, _ := strconv.Atoi(params.CallbackQuery.InlineMessageId)
-		inlineMessageId = int64(inlineMessageId64)
 	}
 	var callbackData utils.CallbackData
 	if params.CallbackQuery != nil {
@@ -102,7 +98,7 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 
 		err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
 			ChatId:    chatId,
-			MessageId: inlineMessageId,
+			MessageId: messageId,
 		})
 		if err != nil {
 			return err
@@ -140,7 +136,7 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 
 		err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
 			ChatId:    chatId,
-			MessageId: inlineMessageId,
+			MessageId: messageId,
 		})
 		if err != nil {
 			return err
@@ -176,7 +172,7 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 		if callbackData.MessageId != 0 {
 			err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
 				ChatId:    chatId,
-				MessageId: inlineMessageId,
+				MessageId: messageId,
 			})
 		}
 
