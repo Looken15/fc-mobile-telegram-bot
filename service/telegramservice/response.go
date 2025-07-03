@@ -57,6 +57,13 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 		chatId = params.CallbackQuery.Message.Chat.ID
 		username = params.CallbackQuery.From.Username
 	}
+	var callbackData utils.CallbackData
+	if params.CallbackQuery != nil {
+		callbackData, err = utils.DecodeCallbackData(params.CallbackQuery.Data)
+		if err != nil {
+			return err
+		}
+	}
 
 	result, err := s.telegramApi.GetChatMember(telegramapi.GetChatMemberRequest{
 		UserId: userId,
@@ -89,15 +96,15 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 			return err
 		}
 
-		return
-	}
-
-	var callbackData utils.CallbackData
-	if params.CallbackQuery != nil {
-		callbackData, err = utils.DecodeCallbackData(params.CallbackQuery.Data)
+		err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
+			ChatId:    chatId,
+			MessageId: callbackData.MessageId + 1,
+		})
 		if err != nil {
 			return err
 		}
+
+		return
 	}
 
 	if params.CallbackQuery != nil && lo.Contains(_positionsArray, callbackData.Position) {
@@ -134,27 +141,6 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 		if err != nil {
 			return err
 		}
-
-		err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
-			ChatId:    chatId,
-			MessageId: callbackData.MessageId + 1,
-		})
-		if err != nil {
-			return err
-		}
-
-		err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
-			ChatId:    chatId,
-			MessageId: callbackData.MessageId + 1,
-		})
-		if err != nil {
-			return err
-		}
-
-		err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
-			ChatId:    params.CallbackQuery.Message.Chat.ID,
-			MessageId: callbackData.MessageId + 1,
-		})
 
 		return nil
 	}
