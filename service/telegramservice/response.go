@@ -65,7 +65,7 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 		return
 	}
 
-	if result.Status != _memberStatus {
+	if result.Status == "" {
 		return
 	}
 
