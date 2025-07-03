@@ -57,6 +57,7 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 
 		newCallbackData := utils.CallbackData{
 			NextCommand: _backMessage,
+			MessageId:   params.CallbackQuery.Message.MessageID,
 		}
 		keyboardLine = append(keyboardLine, telegramapi.InlineKeyboardButton{
 			Text:         "Назад",
@@ -120,6 +121,11 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 		if err != nil {
 			return err
 		}
+
+		err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
+			ChatId:    chatId,
+			MessageId: callbackData.MessageId + 1,
+		})
 
 		return nil
 	}
