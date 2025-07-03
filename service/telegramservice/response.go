@@ -122,10 +122,12 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 			return err
 		}
 
-		err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
-			ChatId:    chatId,
-			MessageId: callbackData.MessageId + 1,
-		})
+		if callbackData.MessageId != 0 {
+			err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
+				ChatId:    chatId,
+				MessageId: callbackData.MessageId + 1,
+			})
+		}
 
 		return nil
 	}
