@@ -3,6 +3,7 @@ package telegramservice
 import (
 	"fc-mobile-telegram-bot/methods/telegramapi"
 	"fc-mobile-telegram-bot/models"
+	"fc-mobile-telegram-bot/utils"
 	"fmt"
 	"github.com/samber/lo"
 )
@@ -38,8 +39,16 @@ var (
 )
 
 func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
-	if params.CallbackQuery != nil && lo.Contains(_positionsArray, params.CallbackQuery.Data) {
-		position := params.CallbackQuery.Data
+	var callbackData utils.CallbackData
+	if params.CallbackQuery != nil {
+		callbackData, err = utils.DecodeCallbackData(params.CallbackQuery.Data)
+		if err != nil {
+			return err
+		}
+	}
+
+	if params.CallbackQuery != nil && lo.Contains(_positionsArray, callbackData.Position) {
+		position := callbackData.Position
 
 		err = s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
 			ChatId:    params.CallbackQuery.Message.Chat.ID,
@@ -51,14 +60,27 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 			return err
 		}
 
+		err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
+			ChatId:    params.Message.Chat.ID,
+			MessageId: callbackData.MessageId,
+		})
+
 		return nil
 	}
 
 	if params.Message != nil && params.Message.Text == _startMessage {
 		keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
 		for _, pos := range _positionsArray {
+			callbackData, err := utils.EncodeCallbackData(utils.CallbackData{
+				Position:  pos,
+				MessageId: params.Message.MessageID,
+			})
+			if err != nil {
+				return err
+			}
+
 			keyboardArray := make([]telegramapi.InlineKeyboardButton, 0)
-			keyboardArray = append(keyboardArray, telegramapi.InlineKeyboardButton{Text: pos, CallbackData: pos})
+			keyboardArray = append(keyboardArray, telegramapi.InlineKeyboardButton{Text: pos, CallbackData: callbackData})
 
 			keyboard = append(keyboard, keyboardArray)
 		}

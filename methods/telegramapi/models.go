@@ -33,3 +33,8 @@ type ReplyKeyboardMarkup struct {
 type KeyboardButton struct {
 	Text string `json:"text"`
 }
+
+type DeleteMessageRequest struct {
+	ChatId    int64 `json:"chat_id"`
+	MessageId int64 `json:"message_id"`
+}
