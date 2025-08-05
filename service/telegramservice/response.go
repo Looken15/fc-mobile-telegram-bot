@@ -14,7 +14,8 @@ const (
 	_tryAgainMessage = "/tryAgain"
 
 	_htmlParseMode = "html"
-	_imagePath     = "./images/%s.jpg"
+	_imagePathJPG  = "./images/%s.jpg"
+	_imagePathPNG  = "./images/%s.png"
 
 	_lastUpdateDate = "2 февраля, 2025"
 
@@ -133,7 +134,7 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 			ChatId:               chatId,
 			Caption:              fmt.Sprintf(_sendPhotoCaption, _positionsWordMap[position], _lastUpdateDate),
 			ParseMode:            _htmlParseMode,
-			Photo:                fmt.Sprintf(_imagePath, position),
+			Photo:                fmt.Sprintf(_imagePathPNG, position),
 			InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
 		})
 		if err != nil {
@@ -169,7 +170,7 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 			Caption:              fmt.Sprintf(_helloCaption, username),
 			InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
 			ParseMode:            _htmlParseMode,
-			Photo:                fmt.Sprintf(_imagePath, "hello"),
+			Photo:                fmt.Sprintf(_imagePathJPG, "hello"),
 		})
 		if err != nil {
 			return err
