@@ -21,6 +21,8 @@ const (
 
 	_sendPhotoCaption = "<b>ТОП-10 %s в FC Mobile</b>\n\nПоследнее обновление:\n%s\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 25</a>"
 
+	_subscribeNeededCaption = "Чтобы использовать бота, необходимо подписаться на канал @karamafc и нажать кнопку «проверить подписку»"
+
 	_helloCaption = "<b>Приветствую, @%s.</b>\n\nВ этом боте вы найдете ТОП-10 игроков на каждую позицию\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 25</a>"
 )
 
@@ -89,7 +91,7 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 
 		err = s.telegramApi.SendMessage(telegramapi.SendMessageRequest{
 			ChatId:               chatId,
-			Text:                 "Надо подписаться бро",
+			Text:                 _subscribeNeededCaption,
 			InlineKeyboardMarkup: telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
 			ParseMode:            _htmlParseMode,
 		})
