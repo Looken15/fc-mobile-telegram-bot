@@ -21,7 +21,8 @@ const (
 
 	_sendPhotoCaption = "<b>ТОП-10 %s в FC Mobile</b>\n\nПоследнее обновление:\n%s\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 25</a>"
 
-	_subscribeNeededCaption = "Чтобы использовать бота, необходимо подписаться на канал @karamafc и нажать кнопку «проверить подписку»"
+	_subscribeLink          = "https://t.me/+mf4AwsUOHlBiNDky"
+	_subscribeNeededCaption = "Чтобы использовать бота, необходимо <a href=\"https://t.me/+mf4AwsUOHlBiNDky\">подписаться на канал</a> и нажать кнопку «Проверить подписку»"
 
 	_helloCaption = "<b>Приветствую, @%s.</b>\n\nВ этом боте вы найдете ТОП-10 игроков на каждую позицию\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 25</a>"
 )
@@ -79,13 +80,13 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 		keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
 		keyboardLine := make([]telegramapi.InlineKeyboardButton, 0)
 
-		newCallbackData := utils.CallbackData{
+		newCallbackDataCheck := utils.CallbackData{
 			NextCommand: _tryAgainMessage,
 			MessageId:   messageId,
 		}
 		keyboardLine = append(keyboardLine, telegramapi.InlineKeyboardButton{
 			Text:         "Проверить подписку",
-			CallbackData: utils.EncodeCallbackData(newCallbackData),
+			CallbackData: utils.EncodeCallbackData(newCallbackDataCheck),
 		})
 		keyboard = append(keyboard, keyboardLine)
 
