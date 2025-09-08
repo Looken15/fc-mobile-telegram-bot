@@ -17,18 +17,16 @@ const (
 	_imagePathJPG  = "./images/%s.jpg"
 	_imagePathPNG  = "./images/%s.png"
 
-	_lastUpdateDate = "1 сентября, 2025"
+	_lastUpdateDate = "8 сентября, 2025"
 
 	_sendPhotoCaption = "<b>ТОП-10 %s в FC Mobile</b>\n\nПоследнее обновление:\n%s\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 25</a>"
 
-	_subscribeLink          = "https://t.me/+mf4AwsUOHlBiNDky"
-	_subscribeNeededCaption = "Чтобы использовать бота, необходимо <a href=\"https://t.me/+mf4AwsUOHlBiNDky\">подписаться на канал</a> и нажать кнопку «Проверить подписку»"
+	_subscribeNeededCaption = "Чтобы использовать бота, необходимо подписаться на каналы <a href=\"https://t.me/+mf4AwsUOHlBiNDky\"> KARAMA | FC MOBILE 25 | FIFA MOBILE </a> и <a href=\"https://t.me/+rkUjX8CQwYcwMjQy\"> BASEMENT ATHLETIC | FC MOBILE </a> и нажать кнопку «Проверить подписку»"
 
 	_helloCaption = "<b>Приветствую, @%s.</b>\n\nВ этом боте вы найдете ТОП-10 игроков на каждую позицию\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 25</a>"
 )
 
 var (
-	_membersArray     = []string{"member", "creator", "administrator"}
 	_positionsArray   = []string{"ВРТ", "ЛЗ", "ЦЗ", "ПЗ", "ЦОП", "ЛП", "ЦП", "ПП", "ЦАП", "ЛВ", "НАП", "ПВ"}
 	_positionsWordMap = map[string]string{
 		"ВРТ": "Вратарей",
@@ -69,14 +67,12 @@ func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
 		}
 	}
 
-	result, err := s.telegramApi.GetChatMember(telegramapi.GetChatMemberRequest{
-		UserId: userId,
-	})
+	result, err := s.telegramApi.CheckIfUserSub(userId)
 	if err != nil {
 		return
 	}
 
-	if !lo.Contains(_membersArray, result.Result.Status) {
+	if !result {
 		keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
 		keyboardLine := make([]telegramapi.InlineKeyboardButton, 0)
 
