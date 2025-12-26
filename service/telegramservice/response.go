@@ -191,24 +191,16 @@ func (s *TelegramService) Response(params models.TelegramUpdate) (err error) {
 	}
 
 	if !isUserSub {
-		err = s.sendUnsubMessage()
-		if err != nil {
-			return err
-		}
+		return s.sendUnsubMessage()
 	}
 
 	if params.CallbackQuery != nil && lo.Contains(_positionsArray, s.callbackData.Position) {
-		err = s.sendPositionsMessage()
-		if err != nil {
-			return err
-		}
+		return s.sendPositionsMessage()
+
 	}
 
 	if s.callbackData.NextCommand == _tryAgainMessage || s.callbackData.NextCommand == _backMessage || (params.Message != nil && params.Message.Text == _startMessage) {
-		err = s.sendStartMessage()
-		if err != nil {
-			return err
-		}
+		return s.sendStartMessage()
 	}
 
 	return
