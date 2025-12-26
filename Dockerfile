@@ -3,7 +3,7 @@ WORKDIR /build
 COPY go.mod .
 RUN go mod download
 COPY . .
-RUN GOOS=linux go build -o /main .
+RUN GOOS=linux go build -v -o /main .
 
 FROM alpine:latest
 WORKDIR /app
