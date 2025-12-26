@@ -14,17 +14,19 @@ const (
 	_tryAgainMessage = "/tryAgain"
 
 	_htmlParseMode = "html"
-	_imagePath     = "./images/%s.jpg"
+	_imagePathJPG  = "./images/%s.jpg"
+	_imagePathPNG  = "./images/%s.png"
 
-	_lastUpdateDate = "2 февраля, 2025"
+	_lastUpdateDate = "22 декабря, 2025"
 
-	_sendPhotoCaption = "<b>ТОП-10 %s в FC Mobile</b>\n\nПоследнее обновление:\n%s\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 25</a>"
+	_sendPhotoCaption = "<b>ТОП-10 %s в FC Mobile</b>\n\nПоследнее обновление:\n%s\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
 
-	_helloCaption = "<b>Приветствую, @%s.</b>\n\nВ этом боте вы найдете ТОП-10 игроков на каждую позицию\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 25</a>"
+	_subscribeNeededCaption = "Чтобы использовать бота, необходимо подписаться на каналы <a href=\"https://t.me/+mf4AwsUOHlBiNDky\"> KARAMA | FC MOBILE 26 | FIFA MOBILE </a> и <a href=\"https://t.me/+rkUjX8CQwYcwMjQy\"> BASEMENT ATHLETIC | FC MOBILE </a> и нажать кнопку «Проверить подписку»"
+
+	_helloCaption = "<b>Приветствую, @%s.</b>\n\nВ этом боте вы найдете ТОП-10 игроков на каждую позицию\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
 )
 
 var (
-	_membersArray     = []string{"member", "creator", "administrator"}
 	_positionsArray   = []string{"ВРТ", "ЛЗ", "ЦЗ", "ПЗ", "ЦОП", "ЛП", "ЦП", "ПП", "ЦАП", "ЛВ", "НАП", "ПВ"}
 	_positionsWordMap = map[string]string{
 		"ВРТ": "Вратарей",
@@ -42,147 +44,163 @@ var (
 	}
 )
 
-func (s TelegramService) Response(params models.TelegramUpdate) (err error) {
-	var messageId, userId, chatId int64
-	var username string
-	if params.Message != nil {
-		userId = params.Message.From.ID
-		messageId = params.Message.MessageID
-		chatId = params.Message.Chat.ID
-		username = params.Message.From.Username
-	}
-	if params.CallbackQuery != nil {
-		userId = params.CallbackQuery.From.ID
-		messageId = params.CallbackQuery.Message.MessageID
-		chatId = params.CallbackQuery.Message.Chat.ID
-		username = params.CallbackQuery.From.Username
-	}
-	var callbackData utils.CallbackData
-	if params.CallbackQuery != nil {
-		callbackData, err = utils.DecodeCallbackData(params.CallbackQuery.Data)
-		if err != nil {
-			return err
-		}
-	}
+func (s *TelegramService) fillParams(userId int64, messageId int64, chatId int64, username string) {
+	s.userId = userId
+	s.messageId = messageId
+	s.chatId = chatId
+	s.username = username
+}
 
-	result, err := s.telegramApi.GetChatMember(telegramapi.GetChatMemberRequest{
-		UserId: userId,
+func (s *TelegramService) fillCallbackData(callbackData string) error {
+	result, err := utils.DecodeCallbackData(callbackData)
+	if err != nil {
+		return err
+	}
+	s.callbackData = result
+	return nil
+}
+
+func (s *TelegramService) sendUnsubMessage() error {
+	keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
+	keyboardLine := make([]telegramapi.InlineKeyboardButton, 0)
+
+	newCallbackDataCheck := utils.CallbackData{
+		NextCommand: _tryAgainMessage,
+		MessageId:   s.messageId,
+	}
+	keyboardLine = append(keyboardLine, telegramapi.InlineKeyboardButton{
+		Text:         "Проверить подписку",
+		CallbackData: utils.EncodeCallbackData(newCallbackDataCheck),
+	})
+	keyboard = append(keyboard, keyboardLine)
+
+	err := s.telegramApi.SendMessage(telegramapi.SendMessageRequest{
+		ChatId:               s.chatId,
+		Text:                 _subscribeNeededCaption,
+		InlineKeyboardMarkup: telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
+		ParseMode:            _htmlParseMode,
 	})
 	if err != nil {
-		return
+		return err
 	}
 
-	if !lo.Contains(_membersArray, result.Result.Status) {
-		keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
-		keyboardLine := make([]telegramapi.InlineKeyboardButton, 0)
+	err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
+		ChatId:    s.chatId,
+		MessageId: s.messageId,
+	})
+	if err != nil {
+		return err
+	}
 
-		newCallbackData := utils.CallbackData{
-			NextCommand: _tryAgainMessage,
-			MessageId:   messageId,
-		}
-		keyboardLine = append(keyboardLine, telegramapi.InlineKeyboardButton{
-			Text:         "Проверить подписку",
-			CallbackData: utils.EncodeCallbackData(newCallbackData),
-		})
-		keyboard = append(keyboard, keyboardLine)
+	return nil
+}
 
-		err = s.telegramApi.SendMessage(telegramapi.SendMessageRequest{
-			ChatId:               chatId,
-			Text:                 "Надо подписаться бро",
-			InlineKeyboardMarkup: telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
-			ParseMode:            _htmlParseMode,
-		})
-		if err != nil {
-			return err
-		}
+func (s *TelegramService) sendStartMessage() error {
+	keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
+	for _, pos := range _positionsArray {
 
+		keyboardArray := make([]telegramapi.InlineKeyboardButton, 0)
+		keyboardArray = append(keyboardArray, telegramapi.InlineKeyboardButton{Text: pos, CallbackData: utils.EncodeCallbackData(utils.CallbackData{
+			Position:  pos,
+			MessageId: s.messageId,
+		})})
+
+		keyboard = append(keyboard, keyboardArray)
+	}
+
+	_, err := s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
+		ChatId:               s.chatId,
+		Caption:              fmt.Sprintf(_helloCaption, s.username),
+		InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
+		ParseMode:            _htmlParseMode,
+		Photo:                fmt.Sprintf(_imagePathJPG, "hello"),
+	})
+	if err != nil {
+		return err
+	}
+
+	if s.callbackData.MessageId != 0 {
 		err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
-			ChatId:    chatId,
-			MessageId: messageId,
+			ChatId:    s.chatId,
+			MessageId: s.messageId,
 		})
+	}
+
+	return nil
+}
+
+func (s *TelegramService) sendPositionsMessage() error {
+	position := s.callbackData.Position
+
+	keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
+	keyboardLine := make([]telegramapi.InlineKeyboardButton, 0)
+
+	newCallbackData := utils.CallbackData{
+		NextCommand: _backMessage,
+		MessageId:   s.messageId,
+	}
+	keyboardLine = append(keyboardLine, telegramapi.InlineKeyboardButton{
+		Text:         "Назад",
+		CallbackData: utils.EncodeCallbackData(newCallbackData),
+	})
+	keyboard = append(keyboard, keyboardLine)
+
+	_, err := s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
+		ChatId:               s.chatId,
+		Caption:              fmt.Sprintf(_sendPhotoCaption, _positionsWordMap[position], _lastUpdateDate),
+		ParseMode:            _htmlParseMode,
+		Photo:                fmt.Sprintf(_imagePathPNG, position),
+		InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
+	})
+	if err != nil {
+		return err
+	}
+
+	err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
+		ChatId:    s.chatId,
+		MessageId: s.messageId,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *TelegramService) Response(params models.TelegramUpdate) (err error) {
+	if params.Message != nil {
+		s.fillParams(params.Message.From.ID, params.Message.MessageID, params.Message.Chat.ID, params.Message.From.Username)
+	}
+	if params.CallbackQuery != nil {
+		s.fillParams(params.CallbackQuery.From.ID, params.CallbackQuery.Message.MessageID, params.CallbackQuery.Message.Chat.ID, params.CallbackQuery.From.Username)
+	}
+	if params.CallbackQuery != nil {
+		err = s.fillCallbackData(params.CallbackQuery.Data)
 		if err != nil {
 			return err
 		}
 
-		return
-	}
-
-	if params.CallbackQuery != nil {
 		_ = s.telegramApi.AnswerCallbackQuery(telegramapi.AnswerCallbackQueryRequest{
 			CallbackQueryId: params.CallbackQuery.Id,
 		})
 	}
 
-	if params.CallbackQuery != nil && lo.Contains(_positionsArray, callbackData.Position) {
-		position := callbackData.Position
-
-		keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
-		keyboardLine := make([]telegramapi.InlineKeyboardButton, 0)
-
-		newCallbackData := utils.CallbackData{
-			NextCommand: _backMessage,
-			MessageId:   messageId,
-		}
-		keyboardLine = append(keyboardLine, telegramapi.InlineKeyboardButton{
-			Text:         "Назад",
-			CallbackData: utils.EncodeCallbackData(newCallbackData),
-		})
-		keyboard = append(keyboard, keyboardLine)
-
-		_, err := s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
-			ChatId:               chatId,
-			Caption:              fmt.Sprintf(_sendPhotoCaption, _positionsWordMap[position], _lastUpdateDate),
-			ParseMode:            _htmlParseMode,
-			Photo:                fmt.Sprintf(_imagePath, position),
-			InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
-		})
-		if err != nil {
-			return err
-		}
-
-		err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
-			ChatId:    chatId,
-			MessageId: messageId,
-		})
-		if err != nil {
-			return err
-		}
-
-		return nil
+	isUserSub, err := s.telegramApi.CheckIfUserSub(s.userId)
+	if err != nil {
+		return
 	}
 
-	if callbackData.NextCommand == _tryAgainMessage || callbackData.NextCommand == _backMessage || (params.Message != nil && params.Message.Text == _startMessage) {
-		keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
-		for _, pos := range _positionsArray {
+	if !isUserSub {
+		return s.sendUnsubMessage()
+	}
 
-			keyboardArray := make([]telegramapi.InlineKeyboardButton, 0)
-			keyboardArray = append(keyboardArray, telegramapi.InlineKeyboardButton{Text: pos, CallbackData: utils.EncodeCallbackData(utils.CallbackData{
-				Position:  pos,
-				MessageId: messageId,
-			})})
+	if params.CallbackQuery != nil && lo.Contains(_positionsArray, s.callbackData.Position) {
+		return s.sendPositionsMessage()
 
-			keyboard = append(keyboard, keyboardArray)
-		}
+	}
 
-		_, err = s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
-			ChatId:               chatId,
-			Caption:              fmt.Sprintf(_helloCaption, username),
-			InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
-			ParseMode:            _htmlParseMode,
-			Photo:                fmt.Sprintf(_imagePath, "hello"),
-		})
-		if err != nil {
-			return err
-		}
-
-		if callbackData.MessageId != 0 {
-			err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
-				ChatId:    chatId,
-				MessageId: messageId,
-			})
-		}
-
-		return nil
+	if s.callbackData.NextCommand == _tryAgainMessage || s.callbackData.NextCommand == _backMessage || (params.Message != nil && params.Message.Text == _startMessage) {
+		return s.sendStartMessage()
 	}
 
 	return
