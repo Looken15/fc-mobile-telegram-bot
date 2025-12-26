@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fc-mobile-telegram-bot/config"
+	"fc-mobile-telegram-bot/db"
 	"github.com/shopspring/decimal"
 	"log"
 	"os"
@@ -13,6 +14,7 @@ func main() {
 	decimal.MarshalJSONWithoutQuotes = true
 
 	settings := config.Get()
+	db.RunMigrate(settings)
 
 	mainCtx, cancelMainCtx := context.WithCancel(context.Background())
 	defer cancelMainCtx()
