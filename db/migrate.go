@@ -33,7 +33,7 @@ func RunMigrate(settings *config.Settings) {
 		log.Fatal(err)
 	}
 
-	dir := filepath.Join(filepath.Join(cwd, "db"), "migrations")
+	dir := filepath.Join(cwd, "migrations")
 
 	fmt.Println(dir)
 
