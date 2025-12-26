@@ -2,6 +2,7 @@ package db
 
 import (
 	"fc-mobile-telegram-bot/config"
+	"fmt"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/jmoiron/sqlx"
 	"github.com/pressly/goose/v3"
@@ -11,6 +12,8 @@ import (
 )
 
 func RunMigrate(settings *config.Settings) {
+	fmt.Println(settings.DbUrl)
+
 	db, err := sqlx.Open("pgx", settings.DbUrl)
 	if err != nil {
 		log.Fatal(err)
@@ -31,6 +34,8 @@ func RunMigrate(settings *config.Settings) {
 	}
 
 	dir := filepath.Join(filepath.Join(cwd, "db"), "migrations")
+
+	fmt.Println(dir)
 
 	if err := goose.Up(db.DB, dir); err != nil {
 		log.Fatal(err)
