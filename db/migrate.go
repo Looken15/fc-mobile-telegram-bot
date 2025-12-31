@@ -38,6 +38,6 @@ func RunMigrate(settings *config.Settings) {
 	fmt.Println(dir)
 
 	if err := goose.Up(db.DB, dir); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 }
