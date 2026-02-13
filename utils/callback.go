@@ -3,10 +3,10 @@ package utils
 import "encoding/json"
 
 type CallbackData struct {
-	Position    string `json:"Position"`
-	Tactic      string `json:"Tactic"`
-	MessageId   int64  `json:"MessageId"`
-	NextCommand string `json:"NextCommand"`
+	Position    string `json:"P"`
+	Tactic      string `json:"T"`
+	MessageId   int64  `json:"M"`
+	NextCommand string `json:"NC"`
 }
 
 func EncodeCallbackData(data CallbackData) string {
