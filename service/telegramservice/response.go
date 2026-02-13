@@ -168,6 +168,14 @@ func (s *TelegramService) sendPositionsMessage() error {
 }
 
 func (s *TelegramService) Response(params models.TelegramUpdate) (err error) {
+	if params.Message != nil && params.Message.From.Username != "looken15" {
+		return
+	}
+
+	if params.CallbackQuery != nil && params.CallbackQuery.From.Username != "looken15" {
+		return
+	}
+
 	if params.Message != nil {
 		s.fillParams(params.Message.From.ID, params.Message.MessageID, params.Message.Chat.ID, params.Message.From.Username)
 	}
