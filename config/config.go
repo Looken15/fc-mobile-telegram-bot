@@ -29,6 +29,7 @@ func Get() *Settings {
 	}
 
 	result.Token = os.Getenv("TOKEN")
+	result.DbUrl = os.Getenv("DBCONN")
 
 	return &result
 }

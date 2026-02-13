@@ -3,11 +3,30 @@ module fc-mobile-telegram-bot
 go 1.23.2
 
 require (
-	github.com/fatih/structs v1.1.0 // indirect
-	github.com/gorilla/mux v1.8.1 // indirect
-	github.com/samber/lo v1.51.0 // indirect
-	github.com/shopspring/decimal v1.4.0 // indirect
-	golang.org/x/net v0.33.0 // indirect
-	golang.org/x/text v0.22.0 // indirect
-	resty.dev/v3 v3.0.0-beta.3 // indirect
+	github.com/gorilla/mux v1.8.1
+	github.com/jackc/pgx/v5 v5.7.5
+	github.com/pressly/goose/v3 v3.26.0
+	github.com/samber/lo v1.51.0
+	github.com/shopspring/decimal v1.4.0
+	resty.dev/v3 v3.0.0-beta.3
+)
+
+require (
+	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
+	github.com/jackc/pgconn v1.14.3 // indirect
+	github.com/jackc/pgio v1.0.0 // indirect
+	github.com/jackc/pgpassfile v1.0.0 // indirect
+	github.com/jackc/pgproto3/v2 v2.3.3 // indirect
+	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
+	github.com/jackc/pgtype v1.14.0 // indirect
+	github.com/jackc/pgx/v4 v4.18.3 // indirect
+	github.com/jackc/puddle/v2 v2.2.2 // indirect
+	github.com/jmoiron/sqlx v1.4.0 // indirect
+	github.com/mfridman/interpolate v0.0.2 // indirect
+	github.com/sethvargo/go-retry v0.3.0 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
+	golang.org/x/crypto v0.40.0 // indirect
+	golang.org/x/net v0.42.0 // indirect
+	golang.org/x/sync v0.16.0 // indirect
+	golang.org/x/text v0.27.0 // indirect
 )
