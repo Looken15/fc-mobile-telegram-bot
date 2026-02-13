@@ -10,8 +10,8 @@ import (
 
 const (
 	_startMessage       = "/start"
-	_toPositionsMessage = "/to-positions"
-	_toTacticsMessage   = "/to-tactics"
+	_toPositionsMessage = "/positions"
+	_toTacticsMessage   = "/tactics"
 	_tryAgainMessage    = "/tryAgain"
 
 	_htmlParseMode = "html"
@@ -258,7 +258,7 @@ func (s *TelegramService) Response(params models.TelegramUpdate) (err error) {
 		return s.sendPositionsMessage()
 	}
 
-	if s.callbackData.NextCommand == _tryAgainMessage || (params.Message != nil && params.Message.Text == _startMessage) {
+	if s.callbackData.NextCommand == _tryAgainMessage || (params.Message != nil && params.Message.Text == _startMessage) || s.callbackData.NextCommand == _startMessage {
 		return s.sendStartMessage()
 	}
 
