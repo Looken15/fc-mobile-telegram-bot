@@ -24,7 +24,9 @@ const (
 
 	_subscribeNeededCaption = "Чтобы использовать бота, необходимо подписаться на каналы <a href=\"https://t.me/+mf4AwsUOHlBiNDky\"> KARAMA | FC MOBILE 26 | FIFA MOBILE </a> и <a href=\"https://t.me/+rkUjX8CQwYcwMjQy\"> BASEMENT ATHLETIC | FC MOBILE </a> и нажать кнопку «Проверить подписку»"
 
-	_helloCaption = "<b>Приветствую, @%s.</b>\n\nВ этом боте вы найдете ТОП-10 игроков на каждую позицию\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
+	_positionCaption = "<b>Приветствую, @%s.</b>\n\nВ этом боте вы найдете ТОП-10 игроков на каждую позицию\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
+	_tacticCaption   = "<b>Приветствую, @%s.</b>\n\nВ этом боте вы найдете ТОП-10 игроков на каждую позицию\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
+	_helloCaption    = "<b>Приветствую, @%s.</b>\n\nВ этом боте вы найдете ТОП-10 игроков на каждую позицию\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
 )
 
 var (
@@ -38,6 +40,7 @@ var (
 			NextCommand: _toTacticsMessage,
 		}}
 	_positionsArray   = []string{"ВРТ", "ЛЗ", "ЦЗ", "ПЗ", "ЦОП", "ЛП", "ЦП", "ПП", "ЦАП", "ЛВ", "НАП", "ПВ"}
+	_tacticsArray     = []string{"3-5-2", "3-4-3 (в линию)", "3-4-3 (ромб)", "4-3-3 (атака)", "4-3-3 (удержание)", "4-2-4", "4-2-4 (2)", "4-1-2-1-2 (узкая)", "4-2-2-2", "4-2-2-2 (2)", "4-2-3-1"}
 	_positionsWordMap = map[string]string{
 		"ВРТ": "Вратарей",
 		"ЛЗ":  "Левых защитников",
@@ -162,7 +165,7 @@ func (s *TelegramService) sendPositionsPickMessage() error {
 
 	_, err := s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
 		ChatId:               s.chatId,
-		Caption:              fmt.Sprintf(_helloCaption, s.username),
+		Caption:              fmt.Sprintf(_positionCaption, s.username),
 		InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
 		ParseMode:            _htmlParseMode,
 		Photo:                fmt.Sprintf(_imagePathJPG, "hello"),
@@ -219,6 +222,87 @@ func (s *TelegramService) sendPositionsMessage() error {
 	return nil
 }
 
+func (s *TelegramService) sendTacticsPickMessage() error {
+	keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
+
+	keyboardArray := make([]telegramapi.InlineKeyboardButton, 0)
+	keyboardArray = append(keyboardArray, telegramapi.InlineKeyboardButton{Text: "В главное меню", CallbackData: utils.EncodeCallbackData(utils.CallbackData{
+		MessageId:   s.messageId,
+		NextCommand: _startMessage,
+	})})
+
+	keyboard = append(keyboard, keyboardArray)
+
+	for _, tactic := range _tacticsArray {
+
+		keyboardArray := make([]telegramapi.InlineKeyboardButton, 0)
+		keyboardArray = append(keyboardArray, telegramapi.InlineKeyboardButton{Text: tactic, CallbackData: utils.EncodeCallbackData(utils.CallbackData{
+			Tactic:    tactic,
+			MessageId: s.messageId,
+		})})
+
+		keyboard = append(keyboard, keyboardArray)
+	}
+
+	_, err := s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
+		ChatId:               s.chatId,
+		Caption:              fmt.Sprintf(_tacticCaption, s.username),
+		InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
+		ParseMode:            _htmlParseMode,
+		Photo:                fmt.Sprintf(_imagePathJPG, "hello"),
+	})
+	if err != nil {
+		return err
+	}
+
+	if s.callbackData.MessageId != 0 {
+		err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
+			ChatId:    s.chatId,
+			MessageId: s.messageId,
+		})
+	}
+
+	return nil
+}
+
+func (s *TelegramService) sendTacticMessage() error {
+	tactic := s.callbackData.Tactic
+
+	keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
+	keyboardLine := make([]telegramapi.InlineKeyboardButton, 0)
+
+	newCallbackData := utils.CallbackData{
+		NextCommand: _toTacticsMessage,
+		MessageId:   s.messageId,
+	}
+	keyboardLine = append(keyboardLine, telegramapi.InlineKeyboardButton{
+		Text:         "Назад",
+		CallbackData: utils.EncodeCallbackData(newCallbackData),
+	})
+	keyboard = append(keyboard, keyboardLine)
+
+	_, err := s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
+		ChatId:               s.chatId,
+		Caption:              "123",
+		ParseMode:            _htmlParseMode,
+		Photo:                fmt.Sprintf(_imagePathPNG, tactic),
+		InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
+	})
+	if err != nil {
+		return err
+	}
+
+	err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
+		ChatId:    s.chatId,
+		MessageId: s.messageId,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *TelegramService) Response(params models.TelegramUpdate) (err error) {
 	if params.Message != nil && params.Message.From.Username != "looken15" {
 		return
@@ -258,12 +342,20 @@ func (s *TelegramService) Response(params models.TelegramUpdate) (err error) {
 		return s.sendPositionsMessage()
 	}
 
+	if params.CallbackQuery != nil && lo.Contains(_tacticsArray, s.callbackData.Tactic) {
+		return s.sendTacticMessage()
+	}
+
 	if s.callbackData.NextCommand == _tryAgainMessage || (params.Message != nil && params.Message.Text == _startMessage) || s.callbackData.NextCommand == _startMessage {
 		return s.sendStartMessage()
 	}
 
-	if s.callbackData.NextCommand == _toPositionsMessage {
+	if s.callbackData.NextCommand == _toPositionsMessage || (params.Message != nil && params.Message.Text == _toPositionsMessage) {
 		return s.sendPositionsPickMessage()
+	}
+
+	if s.callbackData.NextCommand == _toTacticsMessage || (params.Message != nil && params.Message.Text == _toTacticsMessage) {
+		return s.sendTacticsPickMessage()
 	}
 
 	return

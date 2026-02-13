@@ -4,6 +4,7 @@ import "encoding/json"
 
 type CallbackData struct {
 	Position    string `json:"Position"`
+	Tactic      string `json:"Tactic"`
 	MessageId   int64  `json:"MessageId"`
 	NextCommand string `json:"NextCommand"`
 }
