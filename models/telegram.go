@@ -39,3 +39,8 @@ type User struct {
 	LastName     string `json:"last_name"`
 	Username     string `json:"username"`
 }
+
+type Button struct {
+	Text        string `json:"text"`
+	NextCommand string `json:"next_command"`
+}

@@ -9,9 +9,10 @@ import (
 )
 
 const (
-	_startMessage    = "/start"
-	_backMessage     = "/back"
-	_tryAgainMessage = "/tryAgain"
+	_startMessage       = "/start"
+	_toPositionsMessage = "/to-positions"
+	_toTacticsMessage   = "/to-tactics"
+	_tryAgainMessage    = "/tryAgain"
 
 	_htmlParseMode = "html"
 	_imagePathJPG  = "./images/%s.jpg"
@@ -27,6 +28,15 @@ const (
 )
 
 var (
+	_mainButtonsArray = []models.Button{
+		{
+			Text:        "ТОП 10",
+			NextCommand: _toPositionsMessage,
+		},
+		{
+			Text:        "Тактики",
+			NextCommand: _toTacticsMessage,
+		}}
 	_positionsArray   = []string{"ВРТ", "ЛЗ", "ЦЗ", "ПЗ", "ЦОП", "ЛП", "ЦП", "ПП", "ЦАП", "ЛВ", "НАП", "ПВ"}
 	_positionsWordMap = map[string]string{
 		"ВРТ": "Вратарей",
@@ -97,6 +107,48 @@ func (s *TelegramService) sendUnsubMessage() error {
 
 func (s *TelegramService) sendStartMessage() error {
 	keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
+	for _, button := range _mainButtonsArray {
+		keyboardArray := make([]telegramapi.InlineKeyboardButton, 0)
+		keyboardArray = append(keyboardArray, telegramapi.InlineKeyboardButton{Text: button.Text, CallbackData: utils.EncodeCallbackData(utils.CallbackData{
+			MessageId:   s.messageId,
+			NextCommand: button.NextCommand,
+		})})
+
+		keyboard = append(keyboard, keyboardArray)
+	}
+
+	_, err := s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
+		ChatId:               s.chatId,
+		Caption:              fmt.Sprintf(_helloCaption, s.username),
+		InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
+		ParseMode:            _htmlParseMode,
+		Photo:                fmt.Sprintf(_imagePathJPG, "hello"),
+	})
+	if err != nil {
+		return err
+	}
+
+	if s.callbackData.MessageId != 0 {
+		err = s.telegramApi.DeleteMessage(telegramapi.DeleteMessageRequest{
+			ChatId:    s.chatId,
+			MessageId: s.messageId,
+		})
+	}
+
+	return nil
+}
+
+func (s *TelegramService) sendPositionsPickMessage() error {
+	keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
+
+	keyboardArray := make([]telegramapi.InlineKeyboardButton, 0)
+	keyboardArray = append(keyboardArray, telegramapi.InlineKeyboardButton{Text: "В главное меню", CallbackData: utils.EncodeCallbackData(utils.CallbackData{
+		MessageId:   s.messageId,
+		NextCommand: _startMessage,
+	})})
+
+	keyboard = append(keyboard, keyboardArray)
+
 	for _, pos := range _positionsArray {
 
 		keyboardArray := make([]telegramapi.InlineKeyboardButton, 0)
@@ -136,7 +188,7 @@ func (s *TelegramService) sendPositionsMessage() error {
 	keyboardLine := make([]telegramapi.InlineKeyboardButton, 0)
 
 	newCallbackData := utils.CallbackData{
-		NextCommand: _backMessage,
+		NextCommand: _toPositionsMessage,
 		MessageId:   s.messageId,
 	}
 	keyboardLine = append(keyboardLine, telegramapi.InlineKeyboardButton{
@@ -204,11 +256,14 @@ func (s *TelegramService) Response(params models.TelegramUpdate) (err error) {
 
 	if params.CallbackQuery != nil && lo.Contains(_positionsArray, s.callbackData.Position) {
 		return s.sendPositionsMessage()
-
 	}
 
-	if s.callbackData.NextCommand == _tryAgainMessage || s.callbackData.NextCommand == _backMessage || (params.Message != nil && params.Message.Text == _startMessage) {
+	if s.callbackData.NextCommand == _tryAgainMessage || (params.Message != nil && params.Message.Text == _startMessage) {
 		return s.sendStartMessage()
+	}
+
+	if s.callbackData.NextCommand == _toPositionsMessage {
+		return s.sendPositionsPickMessage()
 	}
 
 	return
