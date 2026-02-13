@@ -20,7 +20,8 @@ const (
 
 	_lastUpdateDate = "09 февраля, 2026"
 
-	_sendPhotoCaption = "<b>ТОП-10 %s в FC Mobile</b>\n\nПоследнее обновление:\n%s\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
+	_sendTacticPhotoCaption   = "<b>Лучшая тактика для схемы %s</b>\n\nПоследнее обновление:\n%s\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
+	_sendPositionPhotoCaption = "<b>ТОП-10 %s в FC Mobile</b>\n\nПоследнее обновление:\n%s\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
 
 	_subscribeNeededCaption = "Чтобы использовать бота, необходимо подписаться на каналы <a href=\"https://t.me/+mf4AwsUOHlBiNDky\"> KARAMA | FC MOBILE 26 | FIFA MOBILE </a> и <a href=\"https://t.me/+rkUjX8CQwYcwMjQy\"> BASEMENT ATHLETIC | FC MOBILE </a> и нажать кнопку «Проверить подписку»"
 
@@ -202,7 +203,7 @@ func (s *TelegramService) sendPositionsMessage() error {
 
 	_, err := s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
 		ChatId:               s.chatId,
-		Caption:              fmt.Sprintf(_sendPhotoCaption, _positionsWordMap[position], _lastUpdateDate),
+		Caption:              fmt.Sprintf(_sendPositionPhotoCaption, _positionsWordMap[position], _lastUpdateDate),
 		ParseMode:            _htmlParseMode,
 		Photo:                fmt.Sprintf(_imagePathPNG, position),
 		InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
@@ -283,7 +284,7 @@ func (s *TelegramService) sendTacticMessage() error {
 
 	_, err := s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
 		ChatId:               s.chatId,
-		Caption:              "123",
+		Caption:              fmt.Sprintf(_sendTacticPhotoCaption, tactic, _lastUpdateDate),
 		ParseMode:            _htmlParseMode,
 		Photo:                fmt.Sprintf(_imagePathPNG, tactic),
 		InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
