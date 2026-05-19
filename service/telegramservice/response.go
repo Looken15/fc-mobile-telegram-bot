@@ -25,7 +25,7 @@ const (
 	_sendTacticPhotoCaption   = "<b>Лучшая тактика для схемы %s</b>\n\nПоследнее обновление:\n%s\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
 	_sendPositionPhotoCaption = "<b>ТОП-10 %s в FC Mobile</b>\n\nПоследнее обновление:\n%s\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
 
-	_subscribeNeededCaption = "Чтобы использовать бота, необходимо подписаться на каналы <a href=\"https://t.me/+mf4AwsUOHlBiNDky\"> KARAMA | FC MOBILE 26 | FIFA MOBILE </a> и <a href=\"https://t.me/+rkUjX8CQwYcwMjQy\"> BASEMENT ATHLETIC | FC MOBILE </a> и нажать кнопку «Проверить подписку»"
+	_subscribeNeededCaption = "Чтобы использовать бота, необходимо подписаться на канал <a href=\"https://t.me/+mf4AwsUOHlBiNDky\"> KARAMA | FC MOBILE 26 | FIFA MOBILE </a> и нажать кнопку «Проверить подписку»"
 
 	_positionCaption = "<b>Приветствую, @%s.</b>\n\nВ этом боте вы найдете ТОП-10 игроков на каждую позицию\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
 	_tacticCaption   = "<b>Приветствую, @%s.</b>\n\nВ этом боте вы найдете ТОП-10 игроков на каждую позицию\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
