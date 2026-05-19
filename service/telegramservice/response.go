@@ -311,11 +311,11 @@ func (s *TelegramService) sendTacticMessage() error {
 }
 
 func (s *TelegramService) Response(params models.TelegramUpdate) (err error) {
-	if params.Message != nil && params.Message.From.Username != "looken15" {
+	if params.Message != nil {
 		return
 	}
 
-	if params.CallbackQuery != nil && params.CallbackQuery.From.Username != "looken15" {
+	if params.CallbackQuery != nil {
 		return
 	}
 
