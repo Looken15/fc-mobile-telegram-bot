@@ -29,14 +29,14 @@ func (c *TelegramApi) CheckIfUserSub(userId int64) (bool, error) {
 		return false, nil
 	}
 
-	basementRes, err := c.GetChatMember(GetChatMemberRequest{UserId: userId, ChatId: _basementChatId})
+	/*basementRes, err := c.GetChatMember(GetChatMemberRequest{UserId: userId, ChatId: _basementChatId})
 	if err != nil {
 		return false, err
 	}
 
 	if !lo.Contains(_membersArray, basementRes.Result.Status) {
 		return false, nil
-	}
+	}*/
 
 	return true, nil
 }
