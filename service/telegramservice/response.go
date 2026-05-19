@@ -9,6 +9,8 @@ import (
 )
 
 const (
+	_shopUrl = "https://t.me/whitegamestore_bot?start=agg_0453030c"
+
 	_startMessage       = "/start"
 	_toPositionsMessage = "/positions"
 	_toTacticsMessage   = "/tactics"
@@ -18,7 +20,7 @@ const (
 	_imagePathJPG  = "./images/%s.jpg"
 	_imagePathPNG  = "./images/%s.png"
 
-	_lastUpdateDate = "09 февраля, 2026"
+	_lastUpdateDate = "19 мая, 2026"
 
 	_sendTacticPhotoCaption   = "<b>Лучшая тактика для схемы %s</b>\n\nПоследнее обновление:\n%s\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
 	_sendPositionPhotoCaption = "<b>ТОП-10 %s в FC Mobile</b>\n\nПоследнее обновление:\n%s\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
@@ -37,9 +39,13 @@ var (
 			NextCommand: _toPositionsMessage,
 		},
 		{
+			Text: "Магазин",
+			Url:  _shopUrl,
+		},
+		/*{
 			Text:        "Тактики",
 			NextCommand: _toTacticsMessage,
-		}}
+		}*/}
 	_positionsArray   = []string{"ВРТ", "ЛЗ", "ЦЗ", "ПЗ", "ЦОП", "ЛП", "ЦП", "ПП", "ЦАП", "ЛВ", "НАП", "ПВ"}
 	_tacticsArray     = []string{"3-5-2", "3-4-3 (в линию)", "3-4-3 (ромб)", "4-3-3 (атака)", "4-3-3 (удержание)", "4-2-4", "4-2-4 (2)", "4-1-2-1-2 (узкая)", "4-2-2-2", "4-2-2-2 (2)", "4-2-3-1"}
 	_positionsWordMap = map[string]string{
@@ -113,7 +119,7 @@ func (s *TelegramService) sendStartMessage() error {
 	keyboard := make([][]telegramapi.InlineKeyboardButton, 0)
 	for _, button := range _mainButtonsArray {
 		keyboardArray := make([]telegramapi.InlineKeyboardButton, 0)
-		keyboardArray = append(keyboardArray, telegramapi.InlineKeyboardButton{Text: button.Text, CallbackData: utils.EncodeCallbackData(utils.CallbackData{
+		keyboardArray = append(keyboardArray, telegramapi.InlineKeyboardButton{Text: button.Text, Url: button.Url, CallbackData: utils.EncodeCallbackData(utils.CallbackData{
 			MessageId:   s.messageId,
 			NextCommand: button.NextCommand,
 		})})

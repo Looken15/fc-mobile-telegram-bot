@@ -31,6 +31,7 @@ type InlineKeyboardMarkup struct {
 
 type InlineKeyboardButton struct {
 	Text         string `json:"text"`
+	Url          string `json:"url"`
 	CallbackData string `json:"callback_data"`
 }
 

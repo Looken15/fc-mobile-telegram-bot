@@ -42,5 +42,6 @@ type User struct {
 
 type Button struct {
 	Text        string `json:"text"`
+	Url         string `json:"url"`
 	NextCommand string `json:"next_command"`
 }
