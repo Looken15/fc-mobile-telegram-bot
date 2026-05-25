@@ -20,7 +20,7 @@ const (
 	_imagePathJPG  = "./images/%s.jpg"
 	_imagePathPNG  = "./images/%s.png"
 
-	_lastUpdateDate = "19 мая, 2026"
+	_lastUpdateDate = "25 мая, 2026"
 
 	_sendTacticPhotoCaption   = "<b>Лучшая тактика для схемы %s</b>\n\nПоследнее обновление:\n%s\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
 	_sendPositionPhotoCaption = "<b>ТОП-10 %s в FC Mobile</b>\n\nПоследнее обновление:\n%s\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
@@ -39,12 +39,12 @@ var (
 			NextCommand: _toPositionsMessage,
 		},
 		{
-			Text: "Магазин",
-			Url:  _shopUrl,
-		},
-		{
 			Text:        "Тактики",
 			NextCommand: _toTacticsMessage,
+		},
+		{
+			Text: "Магазин",
+			Url:  _shopUrl,
 		}}
 	_positionsArray   = []string{"ВРТ", "ЛЗ", "ЦЗ", "ПЗ", "ЦОП", "ЛП", "ЦП", "ПП", "ЦАП", "ЛВ", "НАП", "ПВ"}
 	_tacticsArray     = []string{"3-4-3 РОМБ", "4-3-3 АТАКА", "4-3-3 УДЕРЖАНИЕ", "4-2-4", "4-2-1-3", "5-2-1-2"}
