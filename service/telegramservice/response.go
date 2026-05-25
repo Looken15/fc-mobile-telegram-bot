@@ -29,7 +29,7 @@ const (
 
 	_positionCaption = "<b>Приветствую, @%s.</b>\n\nВ этом боте вы найдете ТОП-10 игроков на каждую позицию\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
 	_tacticCaption   = "<b>Приветствую, @%s.</b>\n\nВ этом боте вы найдете ТОП-10 игроков на каждую позицию\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
-	_helloCaption    = "<b>Приветствую, @%s.</b>\n\nВ этом боте вы найдете ТОП-10 игроков на каждую позицию\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
+	_helloCaption    = "<b>Приветствую, @%s.</b>\n\nВ этом боте вы найдете ТОП-10 игроков на каждую позицию и тактики для режима тренера\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
 )
 
 var (
@@ -171,8 +171,8 @@ func (s *TelegramService) sendPositionsPickMessage() error {
 	}
 
 	_, err := s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
-		ChatId:               s.chatId,
-		Caption:              fmt.Sprintf(_positionCaption, s.username),
+		ChatId: s.chatId,
+		//Caption:              fmt.Sprintf(_positionCaption, s.username),
 		InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
 		ParseMode:            _htmlParseMode,
 		Photo:                fmt.Sprintf(_imagePathJPG, "positions"),
@@ -252,8 +252,8 @@ func (s *TelegramService) sendTacticsPickMessage() error {
 	}
 
 	_, err := s.telegramApi.SendPhoto(telegramapi.SendPhotoRequest{
-		ChatId:               s.chatId,
-		Caption:              fmt.Sprintf(_tacticCaption, s.username),
+		ChatId: s.chatId,
+		//Caption:              fmt.Sprintf(_tacticCaption, s.username),
 		InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
 		ParseMode:            _htmlParseMode,
 		Photo:                fmt.Sprintf(_imagePathJPG, "tactics"),
