@@ -42,12 +42,12 @@ var (
 			Text: "Магазин",
 			Url:  _shopUrl,
 		},
-		/*{
+		{
 			Text:        "Тактики",
 			NextCommand: _toTacticsMessage,
-		}*/}
+		}}
 	_positionsArray   = []string{"ВРТ", "ЛЗ", "ЦЗ", "ПЗ", "ЦОП", "ЛП", "ЦП", "ПП", "ЦАП", "ЛВ", "НАП", "ПВ"}
-	_tacticsArray     = []string{"3-5-2", "3-4-3 (в линию)", "3-4-3 (ромб)", "4-3-3 (атака)", "4-3-3 (удержание)", "4-2-4", "4-2-4 (2)", "4-1-2-1-2 (узкая)", "4-2-2-2", "4-2-2-2 (2)", "4-2-3-1"}
+	_tacticsArray     = []string{"3-4-3 РОМБ", "4-3-3 АТАКА", "4-3-3 УДЕРЖАНИЕ", "4-2-4", "4-2-1-3", "5-2-1-2"}
 	_positionsWordMap = map[string]string{
 		"ВРТ": "Вратарей",
 		"ЛЗ":  "Левых защитников",
@@ -132,7 +132,7 @@ func (s *TelegramService) sendStartMessage() error {
 		Caption:              fmt.Sprintf(_helloCaption, s.username),
 		InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
 		ParseMode:            _htmlParseMode,
-		Photo:                fmt.Sprintf(_imagePathJPG, "hello"),
+		Photo:                fmt.Sprintf(_imagePathJPG, "menu"),
 	})
 	if err != nil {
 		return err
@@ -175,7 +175,7 @@ func (s *TelegramService) sendPositionsPickMessage() error {
 		Caption:              fmt.Sprintf(_positionCaption, s.username),
 		InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
 		ParseMode:            _htmlParseMode,
-		Photo:                fmt.Sprintf(_imagePathJPG, "hello"),
+		Photo:                fmt.Sprintf(_imagePathJPG, "positions"),
 	})
 	if err != nil {
 		return err
@@ -256,7 +256,7 @@ func (s *TelegramService) sendTacticsPickMessage() error {
 		Caption:              fmt.Sprintf(_tacticCaption, s.username),
 		InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
 		ParseMode:            _htmlParseMode,
-		Photo:                fmt.Sprintf(_imagePathJPG, "hello"),
+		Photo:                fmt.Sprintf(_imagePathJPG, "tactics"),
 	})
 	if err != nil {
 		return err
