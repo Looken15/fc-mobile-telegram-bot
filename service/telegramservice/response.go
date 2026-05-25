@@ -35,7 +35,7 @@ const (
 var (
 	_mainButtonsArray = []models.Button{
 		{
-			Text:        "ТОП 10",
+			Text:        "ТОП-10",
 			NextCommand: _toPositionsMessage,
 		},
 		{
