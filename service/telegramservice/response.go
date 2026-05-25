@@ -132,7 +132,7 @@ func (s *TelegramService) sendStartMessage() error {
 		Caption:              fmt.Sprintf(_helloCaption, s.username),
 		InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
 		ParseMode:            _htmlParseMode,
-		Photo:                fmt.Sprintf(_imagePathJPG, "menu"),
+		Photo:                fmt.Sprintf(_imagePathPNG, "menu"),
 	})
 	if err != nil {
 		return err
@@ -175,7 +175,7 @@ func (s *TelegramService) sendPositionsPickMessage() error {
 		//Caption:              fmt.Sprintf(_positionCaption, s.username),
 		InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
 		ParseMode:            _htmlParseMode,
-		Photo:                fmt.Sprintf(_imagePathJPG, "positions"),
+		Photo:                fmt.Sprintf(_imagePathPNG, "positions"),
 	})
 	if err != nil {
 		return err
@@ -256,7 +256,7 @@ func (s *TelegramService) sendTacticsPickMessage() error {
 		//Caption:              fmt.Sprintf(_tacticCaption, s.username),
 		InlineKeyboardMarkup: &telegramapi.InlineKeyboardMarkup{Keyboard: keyboard},
 		ParseMode:            _htmlParseMode,
-		Photo:                fmt.Sprintf(_imagePathJPG, "tactics"),
+		Photo:                fmt.Sprintf(_imagePathPNG, "tactics"),
 	})
 	if err != nil {
 		return err
