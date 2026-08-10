@@ -20,7 +20,7 @@ const (
 	_imagePathJPG  = "./images/%s.jpg"
 	_imagePathPNG  = "./images/%s.png"
 
-	_lastUpdateDate = "26 июля, 2026"
+	_lastUpdateDate = "10 августа, 2026"
 
 	_sendTacticPhotoCaption   = "<b>Лучшая тактика для схемы %s</b>\n\nПоследнее обновление:\n%s\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
 	_sendPositionPhotoCaption = "<b>ТОП-10 %s в FC Mobile</b>\n\nПоследнее обновление:\n%s\n\n<a href=\"http://t.me/KaramaFC\">KARAMA | FC MOBILE 26</a>"
